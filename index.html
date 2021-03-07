@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Хранилище данных</title>
+</head>
+<style>
+/* Сброс стилей браузера */
+html, body {
+    margin: 0;
+    padding: 0
+}
+
+/* Расположение двУх блоков рядом по горизонтали */
+body, .container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.for-read, .for-write {
+    width: 40%;
+}
+</style>
+<body>
+<div class="container">
+    <form class="for-write" id="write-form">
+        <div>
+            <label for="text-input">Ввод</label>
+            <input id="text-input" type="text">
+        </div>
+        <div><label for="file-input">Выбор файла</label>
+            <input id="file-input" type="file">
+            <input type="submit">
+        </div>
+        <div id="save-result"></div>
+    </form>
+    <div class="for-read">
+        <h2>Просмотр по категориям</h2>
+        <ul id="categories">
+
+        </ul>
+        <h3>Сохраненный объект</h3>
+        <pre id="saved-object"></pre>
+    </div>
+</div>
+</body>
+
+<script>
+const API = "https://itis2021archserv.herokuapp.com/api"
+
+/**
+ * Фабрика методов апишки
+ * @param method HTTP метод
+ * @param endpoint
+ */
+function makeApiFunction(method, endpoint) {
+  return async function (data = null) {
+    try {
+      const response = await fetch(`${API}/${endpoint}`, {
+        method: method,
+        body: data != null ? JSON.stringify(data) : undefined,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      if (response.ok)
+        return await response.json()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+}
+
+const api = {
+  user_input: makeApiFunction("POST", "user_input/"),
+  sendFile: async function (file) {
+    const formData = new FormData()
+    formData.append("file", file)
+    const response = await fetch(`${API}/file/`, {
+      method: "POST",
+      body: formData,
+    })
+    return await response.json()
+  },
+  getCategories: makeApiFunction("GET", "category/"),
+  getData: function (id) {
+    return fetch(`${API}/data/${id}`, {
+      method: "GET",
+    })
+  },
+}
+
+/**
+ * Отправляет строку данных на сервер, проверяя длину, и обновляет список категорий
+ */
+async function sendForm(event) {
+  // Знак браузеру, что не надо ничего делать, мы сами
+  event.preventDefault()
+  const inputElement = document.getElementById("text-input")
+  const input = inputElement.value
+  let saveResult
+  if (input.length === 0) {
+    const fileInputElement = document.getElementById("file-input")
+    if (fileInputElement.files.length === 0) return
+    saveResult = await api.sendFile(fileInputElement.files[0])
+  } else {
+    saveResult = await api.user_input({ data: input })
+    inputElement.value = ""
+  }
+  if (saveResult.category != null) showSaveResult(saveResult.category)
+  await updateCategories()
+}
+
+function showSaveResult(objectType) {
+  const saveResultElement = document.getElementById("save-result")
+  saveResultElement.innerText = `Объект сохранен под категорией ${objectType}`
+  setTimeout(function () {
+    saveResultElement.innerText = ""
+  }, 3500)
+}
+
+/**
+ * Запрашивает категории с сервера и рендерит их в список
+ */
+async function updateCategories() {
+  const categoriesElement = document.getElementById("categories")
+  const categories = await api.getCategories()
+  categoriesElement.innerHTML = ""
+  for (let category of categories) {
+    const newElement = document.createElement("li")
+    newElement.innerText = category.name
+    newElement.dataset.id = category.id
+    newElement.onclick = onCategoryClick
+    categoriesElement.appendChild(newElement)
+  }
+}
+
+/**
+ * Функция, вызывающаяся по клику на категорию
+ * Получает данные и отображает их в виде текста
+ */
+async function onCategoryClick(event) {
+  const categoryId = event.target.dataset.id
+  const response = await api.getData(categoryId)
+  const savedObject = await response.text()
+  document.getElementById("saved-object").innerText = savedObject
+  await updateCategories()
+}
+
+document.getElementById("write-form").onsubmit = sendForm
+updateCategories()
+</script>
+</html>
