@@ -17,6 +17,14 @@
 <body>
 <div class="container">
     <form onsubmit="sendForm()" class="for-write" id="write-form">
+        <div class="first-name-div">
+            <label for="first-name-input">Имя: </label>
+            <input id="first-name-input" type="text">
+        </div>
+        <div class="last-name-div">
+            <label for="last-name-input">Фамилия: </label>
+            <input id="last-name-input" type="text">
+        </div>
         <div class="login-div">
             <label for="login-input">Логин: </label>
             <input id="login-input" type="text">
@@ -32,7 +40,7 @@
 </div>
 </body>
 <script>
-    const url = "127.0.0.1:8002/api/auth/sign_in"
+    const url = "127.0.0.1:8002/api/auth/sign_up"
 
     async function sendForm() {
 
@@ -43,16 +51,22 @@
             alert("Что-то пошло не так!")
         } else {
             // Иначе отправляем данные
+            const firstNameElement = document.getElementById("first-name-input")
+            const firstName = firstNameElement.value
+            const lastNameElement = document.getElementById("last-name-input")
+            const lastName = lastNameElement.value
             const usernameElement = document.getElementById("login-input")
             const email = usernameElement.value
             const passwordElement = document.getElementById("password-input")
             const password = passwordElement.value
             const data = {
+                first_name: firstName,
+                last_name: lastName,
                 email: email,
                 password: password
             };
             console.log(data)
-            const response = await api(url, 'POST', "/sign_in/", "authorization", JSON.stringify(data), {'Content-Type': 'application/json'})
+            const response = await api(url, 'POST', "/sign_up/", "authorization", JSON.stringify(data), {'Content-Type': 'application/json'})
             console.log(response)
             setCookie(response)
             window.location.href = "index.html"
