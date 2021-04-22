@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <script src="api.js"></script>
+    <script src="validation.js"></script>
+</head>
+<style>
+
+
+    .for-read, .for-write {
+        width: 40%;
+    }
+
+</style>
+<body>
+<div class="container">
+    <form onsubmit="sendForm()" class="for-write" id="write-form">
+        <div class="login-div">
+            <label for="login-input">Логин: </label>
+            <input id="login-input" type="text">
+        </div>
+        <div class="password-div">
+            <label for="password-input">Пароль: </label>
+            <input id="password-input" type="password">
+        </div>
+        <div>
+            <button id="auth-button">Авторизация</button>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    const url = "https://sys-arch.ml/api/auth/sign_in/"
+
+    async function sendForm() {
+
+        event.preventDefault() 
+              const usernameElement = document.getElementById("login-input")
+            const email = usernameElement.value
+            const passwordElement = document.getElementById("password-input")
+            const password = passwordElement.value
+            var urlencoded = new URLSearchParams()
+            urlencoded.append("password", password)
+            urlencoded.append("email", email)
+            const response = await fetch(url , {
+                method: "POST",
+                body: urlencoded,
+                headers: {
+                 "Content-Type": "application/x-www-form-urlencoded"
+                 }
+            }).then(
+                response=> response.json()
+            )
+
+        cookie = "token = " + response.auth_token
+        
+        document.cookie = cookie
+        window.location.href = "index.html"
+          
+        
+    
+        
+    } 
+
+    
+
+</script>
+</html>
