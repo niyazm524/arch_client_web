@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <script src="api.js"></script>
+    <script src="validation.js"></script>
+</head>
+<style>
+.for-read, .for-write {
+        width: 40%;
+    }
+</style>
+<body>
+<div class="container">
+    <form onsubmit="sendForm()" class="for-write" id="write-form">
+        <div class="first-name-div">
+            <label for="first-name-input">Имя: </label>
+            <input id="first-name-input" type="text">
+        </div>
+        <div class="last-name-div">
+            <label for="last-name-input">Фамилия: </label>
+            <input id="last-name-input" type="text">
+        </div>
+        <div class="login-div">
+            <label for="login-input">Логин: </label>
+            <input id="login-input" type="text">
+        </div>
+        <div class="password-div">
+            <label for="password-input">Пароль: </label>
+            <input id="password-input" type="password">
+        </div>
+        <div>
+            <button id="auth-button">Авторизация</button>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    const url = "https://sys-arch.ml/api/auth/sign_up/"
+    async function sendForm() {
+        event.preventDefault() // ADD Валидация на почту и на кол-во символов в пароле > 8, должны присутсвовать символы и цифры
+        // Достаем данные из полей
+        const firstNameElement = document.getElementById("first-name-input")
+        const firstName = firstNameElement.value
+        const lastNameElement = document.getElementById("last-name-input")
+        const lastName = lastNameElement.value
+        const usernameElement = document.getElementById("login-input")
+        const email = usernameElement.value
+        const passwordElement = document.getElementById("password-input")
+        const password = passwordElement.value
+        var urlencoded = new URLSearchParams() // Создаем объект URLSearchParams()
+        // Добавляем в него данные, введенные пользователем
+        urlencoded.append("first_name", firstName) 
+        urlencoded.append("last_name", lastName)
+        urlencoded.append("email", email)
+        urlencoded.append("password", password)
+        // Отправляем запрос
+        const response = await fetch(url , {
+            method: "POST",
+            body: urlencoded,
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+                 }
+            })
+        window.location.href = "auth.html" // Редирект
+        }
+    
+    </script>
+</html>
