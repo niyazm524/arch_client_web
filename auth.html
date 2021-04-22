@@ -31,7 +31,7 @@
 </body>
 <script>
     const url = "https://sys-arch.ml/api/auth/sign_in/"
-    async function sendForm() {    // ADD Проверка на наличие токена
+    async function sendForm() {
         event.preventDefault() 
         // Достаем данные из формы
         const usernameElement = document.getElementById("login-input")
@@ -53,7 +53,9 @@
         // Устанавливаем куки
         cookie = "token = " + response.auth_token
         document.cookie = cookie
-        window.location.href = "index.html" // Редирект
+        if (document.cookie !== undefined) { // Проверка: был ли получен токен
+            window.location.href = "index.html" // Редирект
+        }
     }
 </script>
 </html>
