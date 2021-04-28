@@ -1,70 +1,142 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Авторизация</title>
-    <script src="api.js"></script>
-    <script src="validation.js"></script>
-</head>
-<style>
-.for-read, .for-write {
-        width: 40%;
+    <script 
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  </head>
+  <style>
+    .for-read,
+    .for-write {
+      width: 40%;
     }
-</style>
-<body>
-<div class="container">
-    <form onsubmit="sendForm()" class="for-write" id="write-form">
-        <div class="first-name-div">
-            <label for="first-name-input">Имя: </label>
-            <input id="first-name-input" type="text">
+    .container {
+      position: fixed;
+      top: 30%;
+      left: 45%;
+    }
+    a {
+      position: fixed;
+      top: 54%;
+      left: 55%;
+    }
+    p {
+      color: red;
+    }
+    label {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      margin-top: 8%;
+      margin-right: 3%;
+    }
+    #first-name-input,
+    #last-name-input,
+    #login-input,
+    #password-input {
+      height: 5%;
+      margin-bottom: 5%;
+      margin-top: 5%;
+    }
+    #label1,
+    #label2 {
+      margin-right: 12%;
+    }
+    #label3 {
+      margin-right: 10%;
+    }
+    a {
+      position: fixed;
+      top: 70%;
+      left: 45%;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <form onsubmit="sendForm()" class="for-write" id="write-form">
+        <div class="first-name-div ui input">
+          <label for="first-name-input" id="label1">Имя: </label>
+          <input id="first-name-input" type="text" />
         </div>
-        <div class="last-name-div">
-            <label for="last-name-input">Фамилия: </label>
-            <input id="last-name-input" type="text">
+        <div class="last-name-div ui input">
+          <label for="last-name-input">Фамилия: </label>
+          <input id="last-name-input" type="text" />
         </div>
-        <div class="login-div">
-            <label for="login-input">Логин: </label>
-            <input id="login-input" type="text">
+        <div class="login-div ui input">
+          <label for="login-input" id="label2">Логин: </label>
+          <input id="login-input" type="text" />
         </div>
-        <div class="password-div">
-            <label for="password-input">Пароль: </label>
-            <input id="password-input" type="password">
+        <div class="password-div ui input">
+          <label for="password-input" id="label3">Пароль: </label>
+          <input id="password-input" type="password" />
         </div>
         <div>
-            <button id="auth-button">Авторизация</button>
+          <button class="ui inverted green button" id="auth-button ">
+            Регистрация
+          </button>
+          <a href="http://127.0.0.1:5500/auth.html">Войти</a>
         </div>
-    </form>
-</div>
-</body>
-<script>
-    const url = "https://sys-arch.ml/api/auth/sign_up/"
+      </form>
+    </div>
+  </body>
+  <script>
+    window.onload = function isToken() {
+      // При загрузке страницы проверять наличие токена
+      if (document.cookie !== "") { // Если токен есть, то редирект на страницу авторизации
+        window.location.href = "auth.html";
+      }
+    };
+
+    const url = "https://sys-arch.ml/api/auth/sign_up/";
     async function sendForm() {
-        event.preventDefault() // ADD Валидация на почту и на кол-во символов в пароле > 8, должны присутсвовать символы и цифры
-        // Достаем данные из полей
-        const firstNameElement = document.getElementById("first-name-input")
-        const firstName = firstNameElement.value
-        const lastNameElement = document.getElementById("last-name-input")
-        const lastName = lastNameElement.value
-        const usernameElement = document.getElementById("login-input")
-        const email = usernameElement.value
-        const passwordElement = document.getElementById("password-input")
-        const password = passwordElement.value
-        var urlencoded = new URLSearchParams() // Создаем объект URLSearchParams()
-        // Добавляем в него данные, введенные пользователем
-        urlencoded.append("first_name", firstName) 
-        urlencoded.append("last_name", lastName)
-        urlencoded.append("email", email)
-        urlencoded.append("password", password)
-        // Отправляем запрос
-        const response = await fetch(url , {
-            method: "POST",
-            body: urlencoded,
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-                 }
-            })
-        window.location.href = "auth.html" // Редирект
+      event.preventDefault();
+      // Достаем данные из полей
+      const firstNameElement = document.getElementById("first-name-input");
+      const firstName = firstNameElement.value;
+      const lastNameElement = document.getElementById("last-name-input");
+      const lastName = lastNameElement.value;
+      const usernameElement = document.getElementById("login-input");
+      const email = usernameElement.value;
+      const passwordElement = document.getElementById("password-input");
+      const password = passwordElement.value;
+      var urlencoded = new URLSearchParams(); // Создаем объект URLSearchParams()
+      // Добавляем в него данные, введенные пользователем
+      urlencoded.append("first_name", firstName);
+      urlencoded.append("last_name", lastName);
+      urlencoded.append("email", email);
+      urlencoded.append("password", password);
+      // Отправляем запрос
+      const response = await fetch(url, {
+        method: "POST",
+        body: urlencoded,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }).then(function (response) { // Обрабатываем статус ответа
+        if (response.status == "200") { // Если 200, то устанавливаем куки
+          cookie = "token = " + response.json().auth_token;
+          document.cookie = cookie;
+          window.location.href = "index.html"; // Редирект
+        } else {
+          if (response.status == "400" && !document.getElementById("my_p")) { // Если статус ответа 400 и не было выведено сообщение об ошибке
+            {
+              var errorMessage = document.createElement("p");
+              my_form = document.getElementById("write-form");
+              my_form.id = "my_p";
+              my_form.insertAdjacentHTML( // Добавляем в DOM сообщение об ошибке
+                "afterbegin",
+                "<p>Пользователь с такой почтой уже существует</p>"
+              );
+            }
+          }
         }
-    
-    </script>
+      });
+    }
+  </script>
 </html>
