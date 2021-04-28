@@ -1,211 +1,182 @@
 <!DOCTYPE html>
 <html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Хранилище данных</title>
+  </head>
+  <style>
+    /* Сброс стилей браузера */
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
-<head>
-  <meta charset="UTF-8">
-  <title>Хранилище данных</title>
-</head>
-<style>
-  /* Сброс стилей браузера */
-  html,
-  body {
-    margin: 0;
-    padding: 0
-  }
+    /* Расположение двух блоков рядом по горизонтали */
+    body,
+    .container {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
 
-  /* Расположение двУх блоков рядом по горизонтали */
-  body,
-  .container {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .for-read,
-  .for-write {
-    width: 40%;
-  }
-  .alert-message{
-    color:red;
-    align-items: center;
-    position: absolute;
-    top:30%;
-    left:5%;
-    padding-top: 5%;
-
-  }
-  .alert-hidden{
-    visibility: hidden;
-  }
-</style>
-
-<body>
-  <div class="container">
-    <form class="for-write" id="write-form">
-      <div>
-        <label for="text-input">Ввод</label>
-        <input id="text-input" type="text">
+    .for-read,
+    .for-write {
+      width: 40%;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <form class="for-write" id="write-form">
+        <div>
+          <label for="text-input">Ввод</label>
+          <input id="text-input" type="text" />
+        </div>
+        <div>
+          <label for="file-input">Выбор файла</label>
+          <input id="file-input" type="file" />
+          <input type="submit" />
+        </div>
+        <div id="save-result"></div>
+      </form>
+      <div class="for-read">
+        <h2>Просмотр по категориям</h2>
+        <ul id="categories"></ul>
+        <h3>Сохраненный объект</h3>
+        <pre id="saved-object"></pre>
       </div>
-      <div><label for="file-input">Выбор файла</label>
-        <input id="file-input" type="file">
-        <input type="submit">
-      </div>
-      <div id="save-result"></div>
-    </form>
-    <div class="for-read">
-      <h2>Просмотр по категориям</h2>
-      <ul id="categories">
-
-      </ul>
-      <h3>Сохраненный объект</h3>
-      <pre id="saved-object"></pre>
+      <button onClick="deleteCookie()">Выйти</button>
     </div>
-    <div id="error" class="alert-message">
+  </body>
 
-    </div>
-  </div>
-</body>
+  <script>
+    window.onload = function isToken() {
+      // При загрузке страницы проверять наличие токена
+      if (document.cookie === "") {
+        window.location.href = "auth.html";
+      }
+    };
+    function deleteCookie() {
+      // "Удалить" куки
+      document.cookie = "token= ; Max-Age=0";
+      window.location.href = "auth.html"; // Перейти на страницу авторизации
+    }
+    const API = "https://sys-arch.ml/api";
 
-<script>
-  const API = "https://itis2021archserv.herokuapp.com/api"
+    /**
+     * Фабрика методов апишки
+     * @param method HTTP метод
+     * @param endpoint
+     */
+    function makeApiFunction(method, endpoint) {
+      return async function (data = null) {
+        try {
+          const response = await fetch(`${API}/${endpoint}`, {
+            method: method,
+            body: data != null ? JSON.stringify(data) : undefined,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Token " + document.cookie.split("=")[1],
+            },
+          });
+          if (response.ok) return await response.json();
+        } catch (error) {
+          console.error(error);
+        }
+      };
+    }
 
-  /**
-   * Фабрика методов апишки
-   * @param method HTTP метод
-   * @param endpoint
-   */
-  function makeApiFunction(method, endpoint) {
-    return async function (data = null) {
-      try {
-        const response = await fetch(`${API}/${endpoint}`, {
-          method: method,
-          body: data != null ? JSON.stringify(data) : undefined,
+    const api = {
+      user_input: makeApiFunction("POST", "data/"),
+      sendData: async function (data) {
+        var formData = new FormData(); // Создаем объект FormData
+        // Добавляем в него данные, введенные пользователем
+        formData.append("data", data);
+        const response = await fetch(`${API}/data/`, {
+          // Отправляем данные
+          method: "POST",
+          headers: {
+            Authorization: "Token " + document.cookie.split("=")[1],
+          },
+          body: formData,
+        });
+        return await response.json();
+      },
+      getCategories: makeApiFunction("GET", "category/"), // Поулучаем категории
+      getData: function (id) {
+        return fetch(`${API}/data/${id}`, {
+          // Отправляем запрос
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: "Token " + document.cookie.split("=")[1],
           },
-        })
-        
-        console.log(response);
-        if (response.ok)
-          return await response.json()
-        if(response.status == 500){
-          document.getElementById("error").innerText = "Невозможно получить данные, ошибка сервера";
-      document.getElementById("error").className='alert-message';
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    }
-  }
+        });
+      },
+    };
 
-  const api = {
-    user_input: makeApiFunction("POST", "user_input/"),
-    sendFile: async function (file) {
-        const formData = new FormData()
-      formData.append("file", file)
-      const response = await fetch(`${API}/file/`, {
-        method: "POST",
-        body: formData,
-      })
-      if(response.ok){
-        return await response.json()
-      }
-      if(response.status == 400 ){
-      document.getElementById("error").innerText = "Запись такой категории уже существует";
-      document.getElementById("error").className='alert-message';
-      }
-      
-   
-    },
-    getCategories: makeApiFunction("GET", "category/"),
-    getData: function (id) {
-      const response = fetch(`${API}/data/${id}`, {
-        method: "GET",
-      })
-      if(response.status == 400 ){
-      document.getElementById("error").innerText = "Файл уже был получен";
-      document.getElementById("error").className='alert-message';
-      }
-      if(response.status == 500 ){
-      document.getElementById("error").innerText = "Невозможно получить файл, ошибка сервера";
-      document.getElementById("error").className='alert-message';
-      }
-    },
-  }
-
-  /**
-   * Отправляет строку данных на сервер, проверяя длину, и обновляет список категорий
-   */
-  async function sendForm(event) {
+    /**
+     * Отправляет строку данных на сервер, проверяя длину, и обновляет список категорий
+     */
+    async function sendForm(event) {
       // Знак браузеру, что не надо ничего делать, мы сами
-    event.preventDefault()
-    const inputElement = document.getElementById("text-input")
-    const input = inputElement.value
-    let saveResult
-    if (input.length === 0) {
-      const fileInputElement = document.getElementById("file-input")
-      if (fileInputElement.files.length === 0) return
-      saveResult = await api.sendFile(fileInputElement.files[0])
-    } else {
-      saveResult = await api.user_input({ data: input })
-      inputElement.value = ""
+      event.preventDefault();
+      const inputElement = document.getElementById("text-input");
+      const input = inputElement.value;
+      let saveResult;
+      if (input.length === 0) {
+        // Если форма пустая
+        const fileInputElement = document.getElementById("file-input");
+        if (fileInputElement.files.length === 0) return; // Если нет файла, то выходим
+        saveResult = await api.sendData(fileInputElement.files[0]);
+      } else {
+        // Если файл есть
+        saveResult = await api.sendData(input);
+        inputElement.value = "";
+      }
+      if (saveResult.category != null) showSaveResult(saveResult.category);
+      await updateCategories();
     }
-    
-    if (saveResult.category != null) showSaveResult(saveResult.category)
-    await updateCategories()
-    if (document.getElementById("error")){
-        document.getElementById("error").className='alert-hidden';
+
+    function showSaveResult(objectType) {
+      const saveResultElement = document.getElementById("save-result");
+      saveResultElement.innerText = `Объект сохранен под категорией ${objectType}`;
+      setTimeout(function () {
+        saveResultElement.innerText = "";
+      }, 3500);
     }
-    
-    
-  }
 
-  function showSaveResult(objectType) {
-    const saveResultElement = document.getElementById("save-result")
-    saveResultElement.innerText = `Объект сохранен под категорией ${objectType}`
-    setTimeout(function () {
-      saveResultElement.innerText = ""
-    }, 3500)
-  }
-
-  /**
-   * Запрашивает категории с сервера и рендерит их в список
-   */
-  async function updateCategories() {
-      const categoriesElement = document.getElementById("categories")
-      const categories = await api.getCategories()
-      categoriesElement.innerHTML = ""
+    /**
+     * Запрашивает категории с сервера и рендерит их в список
+     */
+    async function updateCategories() {
+      const categoriesElement = document.getElementById("categories");
+      const categories = await api.getCategories();
+      categoriesElement.innerHTML = "";
       for (let category of categories) {
-        const newElement = document.createElement("li")
-        newElement.innerText = category.name
-        newElement.dataset.id = category.id
-        newElement.onclick = onCategoryClick
-        categoriesElement.appendChild(newElement)
+        const newElement = document.createElement("li");
+        newElement.innerText = category.name;
+        newElement.dataset.id = category.id;
+        newElement.onclick = onCategoryClick;
+        categoriesElement.appendChild(newElement);
       }
-      if (document.getElementById("error")){
-        document.getElementById("error").className='alert-hidden';
-      }
-  
-      
-  }
+    }
 
-  /**
-   * Функция, вызывающаяся по клику на категорию
-   * Получает данные и отображает их в виде текста
-   */
-  async function onCategoryClick(event) {
-    const categoryId = event.target.dataset.id
-    const response = await api.getData(categoryId)
-    const savedObject = await response.text()
-    document.getElementById("saved-object").innerText = savedObject
-    await updateCategories()
-  }
+    /**
+     * Функция, вызывающаяся по клику на категорию
+     * Получает данные и отображает их в виде текста
+     */
+    async function onCategoryClick(event) {
+      const categoryId = event.target.dataset.id;
+      const response = await api.getData(categoryId);
+      const savedObject = await response.text();
+      document.getElementById("saved-object").innerText = savedObject;
+      await updateCategories();
+    }
 
-  document.getElementById("write-form").onsubmit = sendForm
-     updateCategories()
-  setInterval(updateCategories, 5000)
-</script>
-
+    document.getElementById("write-form").onsubmit = sendForm;
+    updateCategories();
+  </script>
 </html>
