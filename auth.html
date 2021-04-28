@@ -3,35 +3,78 @@
   <head>
     <meta charset="UTF-8" />
     <title>Авторизация</title>
-    <script src="api.js"></script>
-    <script src="validation.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
   </head>
   <style>
     .for-read,
     .for-write {
       width: 40%;
     }
+    .container {
+      position: fixed;
+      top: 30%;
+      left: 40%;
+    }
+    p {
+      color: red;
+    }
+    label {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      margin-top: 8%;
+      margin-right: 3%;
+    }
+    #login-input,
+    #password_input,
+    #auth-button {
+      height: 5%;
+      margin-bottom: 5%;
+      margin-top: 5%;
+    }
+    a {
+      position: fixed;
+      top: 55%;
+      left: 40%;
+    }
   </style>
   <body>
     <div class="container">
       <form onsubmit="sendForm()" class="for-write" id="write-form">
-        <div class="login-div">
+        <div class="login-div ui input">
           <label for="login-input">Логин: </label>
           <input id="login-input" type="text" />
         </div>
-        <div class="password-div">
+        <div class="password-div ui input">
           <label for="password-input">Пароль: </label>
           <input id="password-input" type="password" />
         </div>
         <div>
-          <button id="auth-button">Авторизация</button>
+          <button class="ui inverted green button" id="auth-button">
+            Авторизация
+          </button>
+
+          <a href="http://127.0.0.1:5500/sign_up.html">Регистрация</a>
         </div>
       </form>
     </div>
   </body>
   <script>
+    window.onload = function isToken() {
+      // При загрузке страницы проверять наличие токена
+      if (document.cookie !== "") {
+        window.location.href = "index.html";
+      }
+    };
     const url = "https://sys-arch.ml/api/auth/sign_in/";
     async function sendForm() {
+      // ADD Проверка на статус ответа сервера
       event.preventDefault();
       // Достаем данные из формы
       const usernameElement = document.getElementById("login-input");
@@ -48,13 +91,25 @@
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }).then((response) => response.json()); // Устанавливаем куки
-      cookie = "token = " + response.auth_token;
-      document.cookie = cookie;
-      if (document.cookie !== undefined) {
-        // Проверка: был ли получен токен
-        window.location.href = "index.html"; // Редирект
-      }
+      }).then(function (response) { // Обрабатываем ответ
+        if (response.status == "200") { // Если статус ответа 200
+          cookie = "token = " + response.json().auth_token; // Устанавливаем куки
+          document.cookie = cookie;
+          window.location.href = "index.html"; // Редирект
+        } else {
+          if (response.status == "400" && !document.getElementById("my_p")) {  // Если статус ответа 200 и не было выведено сообщение об ошибке в DOM
+            {
+              var errorMessage = document.createElement("p"); 
+              my_form = document.getElementById("write-form");
+              my_form.id = "my_p";
+              my_form.insertAdjacentHTML( // Добавляем в DOM сообщение об ошибке, после формы
+                "afterbegin",
+                "<p>Неверный логин или пароль</p>"
+              );
+            }
+          }
+        }
+      });
     }
   </script>
 </html>
