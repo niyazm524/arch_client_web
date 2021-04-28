@@ -12,9 +12,25 @@ describe('pressSendButton', function () {
   })
   // Непосредственно тест
   it('pressSendButton', async function () {
-    // Переход по ссылке
-    await driver.get("http://127.0.0.1:5500/index.html")
-    await driver.manage().window().setRect(968, 1029)
+    await driver.get("http://127.0.0.1:5500/sign_up.html") // Переход по ссылке
+    await driver.manage().window().setRect(960, 1053)
+    await driver.findElement(By.id("first-name-input")).click() // Вводим данные
+    await driver.findElement(By.id("first-name-input")).sendKeys("test5")
+    await driver.findElement(By.id("last-name-input")).click()
+    await driver.findElement(By.id("last-name-input")).sendKeys("test5")
+    await driver.findElement(By.id("login-input")).click()
+    await driver.findElement(By.id("login-input")).sendKeys("test1111@gmail.com")
+    await driver.findElement(By.id("password-input")).click()
+    await driver.findElement(By.id("password-input")).sendKeys("qwerty123_")
+    await driver.findElement(By.id("auth-button ")).click() // Отправляем данные
+    await driver.wait(until.urlIs("http://127.0.0.1:5500/index.html"), 50000) // Ждем загрузки страницы
+    await driver.findElement(By.css("button")).click() // Выходим
+    await driver.findElement(By.id("login-input")).click() // Вводим данные на странице авторизации
+    await driver.findElement(By.id("login-input")).sendKeys("test1111@gmail.com")
+    await driver.findElement(By.id("password-input")).click()
+    await driver.findElement(By.id("password-input")).sendKeys("qwerty123_")
+    await driver.findElement(By.id("auth-button")).click()
+    await driver.findElement(By.id("text-input")).click()
     // Ввод строки
     await driver.findElement(By.id("text-input")).click()
     await driver.findElement(By.id("text-input")).sendKeys("String")
