@@ -189,7 +189,12 @@
       } else {
         // В остальных случаях выводим текст
         const savedObject = await response.text();
-        document.getElementById("saved-object").innerText = savedObject;
+        if (document.getElementsByTagName("img")) {
+          var image = document.getElementsByTagName("img");
+          console.log(image);
+          document.body.removeChild(image[0]);
+          document.getElementById("saved-object").innerText = savedObject;
+        }
       }
 
       await updateCategories();
