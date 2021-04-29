@@ -23,9 +23,6 @@
       top: 30%;
       left: 40%;
     }
-    p {
-      color: red;
-    }
     label {
       font-family: Verdana, Geneva, Tahoma, sans-serif;
       margin-top: 8%;
@@ -84,6 +81,7 @@
       var urlencoded = new URLSearchParams(); // Создаем объект URLSearchParams()
       urlencoded.append("password", password); // Добавляем в него данные, введенные пользователем
       urlencoded.append("email", email);
+      var status;
       const response = await fetch(url, {
         // Отправляем данные
         method: "POST",
@@ -91,25 +89,12 @@
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }).then(function (response) { // Обрабатываем ответ
-        if (response.status == "200") { // Если статус ответа 200
-          cookie = "token = " + response.json().auth_token; // Устанавливаем куки
-          document.cookie = cookie;
-          window.location.href = "index.html"; // Редирект
-        } else {
-          if (response.status == "400" && !document.getElementById("my_p")) {  // Если статус ответа 200 и не было выведено сообщение об ошибке в DOM
-            {
-              var errorMessage = document.createElement("p"); 
-              my_form = document.getElementById("write-form");
-              my_form.id = "my_p";
-              my_form.insertAdjacentHTML( // Добавляем в DOM сообщение об ошибке, после формы
-                "afterbegin",
-                "<p>Неверный логин или пароль</p>"
-              );
-            }
-          }
-        }
-      });
+      }).then((response) => response.json());
+      cookie = "token = " + response.auth_token;
+      document.cookie = cookie;
+      if (response.auth_token !== undefined ) {
+        window.location.href = "index.html";
+      }
     }
   </script>
 </html>
