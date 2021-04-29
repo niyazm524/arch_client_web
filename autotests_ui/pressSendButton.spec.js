@@ -12,30 +12,35 @@ describe('pressSendButton', function () {
   })
   // Непосредственно тест
   it('pressSendButton', async function () {
-    await driver.get("http://127.0.0.1:5500/sign_up.html") // Переход по ссылке
+    // Переход по ссылке
+    await driver.get("https://sys-arch.ml/sign_up")
     await driver.manage().window().setRect(960, 1053)
     await driver.findElement(By.id("first-name-input")).click() // Вводим данные
-    await driver.findElement(By.id("first-name-input")).sendKeys("test5")
+    await driver.findElement(By.id("first-name-input")).sendKeys("test1")
     await driver.findElement(By.id("last-name-input")).click()
-    await driver.findElement(By.id("last-name-input")).sendKeys("test5")
+    await driver.findElement(By.id("last-name-input")).sendKeys("test1")
     await driver.findElement(By.id("login-input")).click()
-    await driver.findElement(By.id("login-input")).sendKeys("test1111@gmail.com")
+    await driver.findElement(By.id("login-input")).sendKeys("newtest@gmail.com")
     await driver.findElement(By.id("password-input")).click()
     await driver.findElement(By.id("password-input")).sendKeys("qwerty123_")
-    await driver.findElement(By.id("auth-button ")).click() // Отправляем данные
-    await driver.wait(until.urlIs("http://127.0.0.1:5500/index.html"), 50000) // Ждем загрузки страницы
-    await driver.findElement(By.css("button")).click() // Выходим
-    await driver.findElement(By.id("login-input")).click() // Вводим данные на странице авторизации
-    await driver.findElement(By.id("login-input")).sendKeys("test1111@gmail.com")
+    await driver.findElement(By.id("auth-button ")).click() // Нажимаем на кнопку авторизации
+    await driver.wait(until.urlIs("https://sys-arch.ml/auth"), 50000) // Ожидаем загрузки страницы авторизации
+    await driver.findElement(By.id("login-input")).click() // Вводим данные
+    await driver.findElement(By.id("login-input")).sendKeys("newtest@gmail.com")
     await driver.findElement(By.id("password-input")).click()
     await driver.findElement(By.id("password-input")).sendKeys("qwerty123_")
     await driver.findElement(By.id("auth-button")).click()
+    await driver.wait(until.urlIs("https://sys-arch.ml/index"), 50000) // Ожидаем загрузки страницы
     await driver.findElement(By.id("text-input")).click()
-    // Ввод строки
-    await driver.findElement(By.id("text-input")).click()
-    await driver.findElement(By.id("text-input")).sendKeys("String")
-    // Нажатие на кнопку
-    await driver.findElement(By.css("input:nth-child(3)")).click();
+    await driver.findElement(By.id("text-input")).sendKeys("23") // Вводим числовые значения
+    await driver.findElement(By.css("input:nth-child(3)")).click()
+    await driver.wait(until.urlIs("https://sys-arch.ml/index"), 50000) // Ожидаем, чтобы данные не вписывались в поле одновременно
+    await driver.findElement(By.id("text-input")).sendKeys("String") // Вводим строковое значение
+    await driver.findElement(By.css("input:nth-child(3)")).click()
+    await driver.wait(until.urlIs("https://sys-arch.ml/index"), 50000)
+    await driver.findElement(By.css("li:nth-child(1)")).click() // Получаем категорию
+    await driver.findElement(By.css("li")).click() 
+    await driver.findElement(By.css("button")).click() // Выходим
     await driver.quit();
   })
 })
