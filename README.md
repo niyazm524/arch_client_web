@@ -1,4 +1,4 @@
-# Client for study project for system architecture
+# Client for Authorization server
 #### Client for service which can uploading and downloading data
 ## Usage
 #### Only authorized users can reach Main page.
