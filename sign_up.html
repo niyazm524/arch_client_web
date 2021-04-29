@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Авторизация</title>
-    <script 
+    <script
       src="https://code.jquery.com/jquery-3.1.1.min.js"
       crossorigin="anonymous"
     ></script>
@@ -88,7 +88,8 @@
   <script>
     window.onload = function isToken() {
       // При загрузке страницы проверять наличие токена
-      if (document.cookie !== "") { // Если токен есть, то редирект на страницу авторизации
+      if (document.cookie !== "") {
+        // Если токен есть, то редирект на страницу авторизации
         window.location.href = "auth.html";
       }
     };
@@ -118,18 +119,21 @@
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }).then(function (response) { // Обрабатываем статус ответа
-        if (response.status == "200") { // Если 200, то устанавливаем куки
-          cookie = "token = " + response.json().auth_token;
-          document.cookie = cookie;
+      }).then(function (response) {
+        // Обрабатываем статус ответа
+        if (response.status == "200") {
+          // Если 200 и токен известен, то устанавливаем куки
+
           window.location.href = "index.html"; // Редирект
         } else {
-          if (response.status == "400" && !document.getElementById("my_p")) { // Если статус ответа 400 и не было выведено сообщение об ошибке
+          if (response.status == "400" && !document.getElementById("my_p")) {
+            // Если статус ответа 400 и не было выведено сообщение об ошибке
             {
               var errorMessage = document.createElement("p");
               my_form = document.getElementById("write-form");
               my_form.id = "my_p";
-              my_form.insertAdjacentHTML( // Добавляем в DOM сообщение об ошибке
+              my_form.insertAdjacentHTML(
+                // Добавляем в DOM сообщение об ошибке
                 "afterbegin",
                 "<p>Пользователь с такой почтой уже существует</p>"
               );
