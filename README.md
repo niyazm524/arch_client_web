@@ -6,7 +6,9 @@ Clone this git repository using
 
 `git clone https://github.com/hinagawa/arch_client_web.git`
 
-Download and install [Node](https://nodejs.org/)
+Download and install 
+
+[Node](https://nodejs.org/)
 
 Install project dependancies:
 
