@@ -9,11 +9,11 @@ Clone this git repository using
 Download and install 
 [Node](https://nodejs.org/)
 
-Install project dependences:
+Install project dependencies:
 
 `npm install`
 
-Run project dependences:
+Run project dependencies:
 
 `npm start`
 
