@@ -20,7 +20,7 @@ Run project dependancies:
 
 To run ui tests:
 
-`npm run test
+`npm run test`
 ## Usage
 #### Only authorized users can reach Main page.
 * Sign up page (https://sys-arch.ml/sign_up)
