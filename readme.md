@@ -10,6 +10,11 @@ This project made to upload, share and download files. Requires authentication s
 npm install -g testcafe
 ```
 
+Локальная установка TestCafe в проект
+```bash
+npm install --save-dev testcafe
+```
+
 ## Для запуска тестов из данного проекта:
 
 ```bash
