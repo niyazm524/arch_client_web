@@ -40,7 +40,7 @@ Set terminal in testcafe-tests directory and run:
 #### Only authorized users can reach Main page.
 * Sign up page (https://sadmadsoul.dev/sign_up)
 * Auth page (https://sadmadsoul.dev/auth)
-* Main page (https://sadmadsoul.dev/index)
+* Main page (https://sadmadsoul.dev/index) // Паттерны Стратегия и Абстрактная фабрика
 ## Related repositories
 1. [Configuration Server](https://github.com/unbrokenguy/sys-arch-conf-app)
 2. [Authorization Server](https://github.com/unbrokenguy/sys-arch-auth-app)
