@@ -20,13 +20,13 @@ Run project:
 
 ## Tests
 
-To run autotest_ui:
+###To run autotest_ui:
 
 Set terminal in autotest_ui directory and run:
 
 `npm run test`
 
-To run testcafe-tests:
+###To run testcafe-tests:
 
 Install testcafe dependencies:
 
