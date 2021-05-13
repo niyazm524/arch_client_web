@@ -69,7 +69,7 @@
       document.cookie = "token= ; Max-Age=0";
       window.location.href = "auth.html"; // Перейти на страницу авторизации
     }
-    const API = "https://sys-arch.ml/api";
+    const API = "https://sadmadsoul.dev/api";
 
     /**
      * Фабрика методов апишки
@@ -169,7 +169,36 @@
         categoriesElement.appendChild(newElement);
       }
     }
+    // Стратегия
+    class StrategyManager {
+      constructor() {
+        this._strategy = null;
+      }
+      set strategy(strategy) {
+        this._strategy = strategy;
+      }
+      doStrategy() {
+        this._strategy.doStrategy();
+      }
+    }
+    class ImgStrategy {
+      async doStrategy(buffer) {
+        document.getElementById("saved-object").innerText = " "; // "Убираем" текст
+        // Если категория Картинки, то отображаем картинку
 
+        const bytes = new Uint8Array(buffer);
+        const decoder = new TextDecoder("utf8");
+        var image = new Image();
+        image.src = "data:image/png;base64," + encode(bytes); // Устанавливаем ссылку на источник
+        document.body.appendChild(image); // Добавляем в DOM
+      }
+    }
+    class TextStrategy {
+      async doStrategy(savedObject) {
+        console.log(savedObject);
+        document.getElementById("saved-object").innerText = savedObject;
+      }
+    }
     /**
      * Функция, вызывающаяся по клику на категорию
      * Получает данные и отображает их в виде текста
@@ -178,23 +207,19 @@
       const categoryId = event.target.dataset.id; // Получаем id
       const categoryType = event.target.innerText; // Получаем категорию
       const response = await api.getData(categoryId);
+      const strategyManager = new StrategyManager();
       if (categoryType == "Картинки") {
-        // Если категория Картинки, то отображаем картинку
         const buffer = await response.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
-        const decoder = new TextDecoder("utf8");
-        var image = new Image();
-        image.src = "data:image/png;base64," + encode(bytes); // Устанавливаем ссылку на источник
-        document.body.appendChild(image); // Добавляем в DOM
+        const imgStrategy = new ImgStrategy(buffer);
+        strategyManager.strategy = imgStrategy;
+        strategyManager.doStrategy();
       } else {
         // В остальных случаях выводим текст
         const savedObject = await response.text();
-        if (document.getElementsByTagName("img")) {
-          var image = document.getElementsByTagName("img");
-          console.log(image);
-          document.body.removeChild(image[0]);
-          document.getElementById("saved-object").innerText = savedObject;
-        }
+        console.log(savedObject);
+        const textStrategy = new TextStrategy(savedObject);
+        strategyManager.strategy = textStrategy;
+        strategyManager.doStrategy();
       }
 
       await updateCategories();
