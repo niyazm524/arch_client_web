@@ -1,0 +1,8 @@
+{
+  "name": "arch_client_web",
+  "version": "1.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "testcafe": "^1.14.0"
+  }
+}
